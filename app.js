@@ -1,6 +1,7 @@
 `use strict`
 
 const readline = require('readline');
+const async = require('async');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -18,20 +19,28 @@ var ops = {
 
 console.log(`Welcome to my simple Node.js calculator, simply add numbers when requested and submit an operator \n`)
 
-rl.question('Number One : ', (answer) => {
-  calculator.numberOne = answer;
-    rl.question('Number Two : ', (answer) => {
-      calculator.numberTwo = answer;
+async.series([
+    function(callback) {
+      rl.question('Number One : ', (answer) => {
+        calculator.numberOne = answer;
+        callback()
+      });
+    },
+    function(callback) {
+      rl.question('Number Two : ', (answer) => {
+        calculator.numberTwo = answer;
+        callback()
+      });
+    },
+    function(callback) {
       rl.question('Operator : ', (answer) => {
         calculator.operator = answer;
         rl.close()
-        var output = console.log(`\n${calculator.numberOne} ${calculator.operator} ${calculator.numberTwo} equals :`, ops[calculator.operator](calculator.numberOne, calculator.numberTwo));
-    });
-  });
-});
-
-// var calculate = function(numberOne, numberTwo, operator) {
-//   console.log(`calculating.....`)
-//   var output = Mathnumber1 operator numbertwo;
-//   console.log(`Calculation complete: ${numberOne} ${operator} ${numberTwo} equals ${output}`)
-// }
+        callback()
+      });
+    },
+    function(callback) {
+      var output = console.log(`\n${calculator.numberOne} ${calculator.operator} ${calculator.numberTwo} equals :`, ops[calculator.operator](calculator.numberOne, calculator.numberTwo));
+      callback()
+    }
+]);
